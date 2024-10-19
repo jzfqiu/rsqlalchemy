@@ -2,7 +2,7 @@ from typing import Optional
 from sqlalchemy import ColumnElement, String, and_
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from rsqlalchemy.parse import comparison, expression_and, expression_or
+from rsqlalchemy.parse import comparison, expression_and
 
 
 class Base(DeclarativeBase):
