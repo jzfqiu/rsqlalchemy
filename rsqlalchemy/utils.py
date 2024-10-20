@@ -1,6 +1,10 @@
 import re
 
 
+def is_group(s: str) -> bool:
+    return s.startswith("(") and s.endswith(")")
+
+
 def split_query(target: str, delimiters: list[str]) -> list[str]:
     level = 0
     preserved: list[str] = []

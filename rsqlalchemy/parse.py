@@ -1,15 +1,11 @@
 from sqlalchemy import ColumnElement, and_, or_
 from sqlalchemy.orm import DeclarativeBase
 
-from rsqlalchemy.utils import split_query
-
-
-def _is_group(s: str) -> bool:
-    return s.startswith("(") and s.endswith(")")
+from rsqlalchemy.utils import split_query, is_group
 
 
 def query_to_sql(orm_model: DeclarativeBase, s: str) -> ColumnElement:
-    return expression_or()
+    return expression_or(orm_model, s)
 
 
 def expression_or(orm_model: DeclarativeBase, s: str) -> ColumnElement:
@@ -18,7 +14,7 @@ def expression_or(orm_model: DeclarativeBase, s: str) -> ColumnElement:
     if len(children) <= 1:
         return expression_and(orm_model, s)
     for child in children:
-        if _is_group(child):
+        if is_group(child):
             parsed_children.append(expression_or(orm_model, child[1:-1]))
         else:
             parsed_children.append(expression_and(orm_model, child))
@@ -31,7 +27,7 @@ def expression_and(orm_model: DeclarativeBase, s: str) -> ColumnElement:
     if len(children) <= 1:
         return comparison(orm_model, s)
     for child in children:
-        if _is_group(child):
+        if is_group(child):
             parsed_children.append(expression_or(orm_model, child[1:-1]))
         else:
             parsed_children.append(comparison(orm_model, child))
@@ -48,7 +44,7 @@ def comparison(orm_model: DeclarativeBase, s: str) -> ColumnElement:
 
     column: ColumnElement = getattr(orm_model, selector)
 
-    if _is_group(arguments):
+    if is_group(arguments):
         args = arguments.strip("()").split(",")
         args = [None if x == "null" else x for x in args]
         if comparison_op == "=in=":
@@ -63,7 +59,10 @@ def comparison(orm_model: DeclarativeBase, s: str) -> ColumnElement:
         arguments = None
 
     if comparison_op == "==":
-        return column == arguments
+        if arguments and "*" in arguments:
+            return column.like(arguments.replace("*", "%"))
+        else:
+            return column == arguments
     elif comparison_op == "<=":
         return column <= arguments
     elif comparison_op == ">=":
