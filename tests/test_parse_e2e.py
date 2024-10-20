@@ -40,3 +40,18 @@ def test_eq(get_db: Engine):
                 select(User.id).where(query_to_sql(User, query))
             ).all()
             assert result == expected
+
+def test_in(get_db: Engine):
+    test_cases = [
+        ("id=in=(1,2,3)", [1,2,3]),
+        ("id=in=(1)", [1]),
+        ("id=in=()", []),
+        ("id=in=(1,2,3) or name=in=(Charlie,Eve,Frank)", [1,2,3,4,5,6]),
+        ("id=in=(1,2,3) and name=in=(Charlie,Eve,Frank)", [3]),
+    ]
+    with Session(get_db) as session:
+        for query, expected in test_cases:
+            result = session.scalars(
+                select(User.id).where(query_to_sql(User, query))
+            ).all()
+            assert result == expected

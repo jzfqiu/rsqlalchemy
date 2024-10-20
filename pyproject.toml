@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rsqlalchemy"
+version = "0.0.1"
+authors = [
+  { name="Jeff Qiu", email="jeff.z.qiu@gmail.com" },
+]
+description = "Converts rsql query into sqlalchemy expressions"
+readme = "README.md"
+dependencies = [
+  "sqlalchemy>=2.0.0"
+]
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/jzfqiu/rsqlalchemy"
+Issues = "https://github.com/jzfqiu/rsqlalchemy/issues"
