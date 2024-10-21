@@ -1,4 +1,4 @@
-from rsqlalchemy import utils
+from rsqlalchemy.parse import split_query
 
 
 def test_split_ignore_parenth():
@@ -15,7 +15,7 @@ def test_split_ignore_parenth():
         ],
     ]
     for target, delimiter, expected in test_cases:
-        actual = utils.split_query(target, delimiter)
+        actual = split_query(target, delimiter)
         assert (
             expected == actual
         ), f"\nTarget: {target}\nExpected: {expected}\nActual: {actual}"
@@ -23,13 +23,13 @@ def test_split_ignore_parenth():
 
 def test_split_ignore_parenth_error():
     try:
-        utils.split_query("a or b or c)))))", [" or "])
+        split_query("a or b or c)))))", [" or "])
     except ValueError as e:
         assert e.args == ("Invalid expression: too many right parentheses",)
     else:
         assert False, "Test should raise ValueError but didn't"
     try:
-        utils.split_query("(((a or b or c", [" or "])
+        split_query("(((a or b or c", [" or "])
     except ValueError as e:
         assert e.args == ("Invalid expression: too many left parentheses",)
     else:
